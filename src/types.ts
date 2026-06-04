@@ -1,5 +1,5 @@
-import marriageImage from './assets/marriage-image.jpg.jpeg'
-import giftImage from './assets/gift-image.jpg.jpeg'
+import marriageImage from './assets/marriage-image.jpg'
+import giftImage from './assets/gift-image.png'
 
 export type Screen = 'intro' | 'memory' | 'final'
 

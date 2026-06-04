@@ -1,25 +1,26 @@
-import { motion, useMotionValue, useTransform } from 'framer-motion'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useDoubleTap } from '../../hooks/useDoubleTap'
-import { useIsMobile } from '../../hooks/useIsMobile'
-import { triggerHaptic } from '../../utils/haptic'
-import { FloatingHearts } from '../FloatingHearts'
-import { MemoryCard } from '../MemoryCard'
-import { HER_NAME } from '../../data/personal'
-import { MilestoneTimeline } from '../MilestoneTimeline'
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDoubleTap, useIsMobile } from "../../hooks/index.ts";
+import { triggerHaptic } from "../../utils/haptic";
+import { FloatingHearts } from "../FloatingHearts";
+import { MemoryCard } from "../MemoryCard";
+import { HER_NAME } from "../../data/personal";
+import { MilestoneTimeline } from "../MilestoneTimeline";
 
 interface MemoryScreenProps {
-  onComplete: () => void
+  onComplete: () => void;
 }
 
 export function Memory1({ onComplete }: MemoryScreenProps) {
-  const [tapped, setTapped] = useState(false)
-  const isMobile = useIsMobile()
+  const [tapped, setTapped] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <MemoryCard
       title="The Bravest Decision"
-      hint={isMobile ? 'Tap the floating heart ❤️' : 'Click the floating heart ❤️'}
+      hint={
+        isMobile ? "Tap the floating heart ❤️" : "Click the floating heart ❤️"
+      }
       onContinue={onComplete}
     >
       <p>One year ago...</p>
@@ -29,16 +30,17 @@ export function Memory1({ onComplete }: MemoryScreenProps) {
       <p>You made the bravest decision of your life.</p>
       <p className="font-medium">You married me.</p>
       <p className="text-base italic text-rose-gold">
-        I&apos;m still not sure if it was confidence or lack of proper investigation.
+        I&apos;m still not sure if it was confidence or lack of proper
+        investigation.
       </p>
       <FloatingHearts
         count={1}
         interactive
         onHeartTap={() => {
           if (!tapped) {
-            setTapped(true)
-            triggerHaptic(20)
-            setTimeout(onComplete, 600)
+            setTapped(true);
+            triggerHaptic(20);
+            setTimeout(onComplete, 600);
           }
         }}
       />
@@ -48,37 +50,42 @@ export function Memory1({ onComplete }: MemoryScreenProps) {
           animate={{ y: [0, -15, 0], scale: [1, 1.2, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
           onClick={() => {
-            setTapped(true)
-            triggerHaptic(20)
-            setTimeout(onComplete, 600)
+            setTapped(true);
+            triggerHaptic(20);
+            setTimeout(onComplete, 600);
           }}
         >
           ❤️
         </motion.span>
       )}
     </MemoryCard>
-  )
+  );
 }
 
 export function Memory2({ onComplete }: MemoryScreenProps) {
-  const isMobile = useIsMobile()
-  const x = useMotionValue(0)
-  const opacity = useTransform(x, [0, 120], [1, 0.92])
-  const [done, setDone] = useState(false)
+  const isMobile = useIsMobile();
+  const x = useMotionValue(0);
+  const opacity = useTransform(x, [0, 120], [1, 0.92]);
+  const [done, setDone] = useState(false);
 
   const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
     if (info.offset.x > 80 && !done) {
-      setDone(true)
-      triggerHaptic(25)
-      onComplete()
+      setDone(true);
+      triggerHaptic(25);
+      onComplete();
     }
-  }
+  };
 
   return (
-    <motion.div style={{ x, opacity }} drag="x" dragConstraints={{ left: 0, right: 0 }} onDragEnd={handleDragEnd}>
+    <motion.div
+      style={{ x, opacity }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={handleDragEnd}
+    >
       <MemoryCard
         title="365 Days"
-        hint={isMobile ? 'Swipe right →' : 'Drag the card to the right →'}
+        hint={isMobile ? "Swipe right →" : "Drag the card to the right →"}
         onContinue={onComplete}
         vividText
       >
@@ -97,41 +104,44 @@ export function Memory2({ onComplete }: MemoryScreenProps) {
         </motion.div>
       </MemoryCard>
     </motion.div>
-  )
+  );
 }
 
 export function Memory3({ onComplete }: MemoryScreenProps) {
-  const [progress, setProgress] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const holdingRef = useRef(false)
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const holdingRef = useRef(false);
 
   const startHold = () => {
-    holdingRef.current = true
-    triggerHaptic(5)
+    holdingRef.current = true;
+    triggerHaptic(5);
     intervalRef.current = setInterval(() => {
       setProgress((p) => {
-        const next = p + 5
+        const next = p + 5;
         if (next >= 100) {
-          if (intervalRef.current) clearInterval(intervalRef.current)
-          holdingRef.current = false
-          triggerHaptic([30, 20, 30])
-          setTimeout(onComplete, 400)
-          return 100
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          holdingRef.current = false;
+          triggerHaptic([30, 20, 30]);
+          setTimeout(onComplete, 400);
+          return 100;
         }
-        return next
-      })
-    }, 100)
-  }
+        return next;
+      });
+    }, 100);
+  };
 
   const endHold = () => {
-    holdingRef.current = false
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    if (progress < 100) setProgress(0)
-  }
+    holdingRef.current = false;
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (progress < 100) setProgress(0);
+  };
 
-  useEffect(() => () => {
-    if (intervalRef.current) clearInterval(intervalRef.current)
-  }, [])
+  useEffect(
+    () => () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    },
+    []
+  );
 
   return (
     <MemoryCard
@@ -143,11 +153,11 @@ export function Memory3({ onComplete }: MemoryScreenProps) {
       <p className="font-medium">Apparently it also means:</p>
       <ul className="space-y-1 text-left text-base">
         {[
-          'Sharing food',
-          'Sharing blankets',
-          'Sharing decisions',
-          'Sharing passwords',
-          'And losing every argument',
+          "Sharing food",
+          "Sharing blankets",
+          "Sharing decisions",
+          "Sharing passwords",
+          "And losing every argument",
         ].map((item, i) => (
           <motion.li
             key={item}
@@ -174,28 +184,28 @@ export function Memory3({ onComplete }: MemoryScreenProps) {
         <span className="relative">Fine, You Win</span>
       </motion.button>
     </MemoryCard>
-  )
+  );
 }
 
 const CHECKLIST = [
-  'She is always right',
-  'If she is wrong, refer to point 1',
-  'She finds things I can never find',
-  'She knows what I am thinking',
-  'She remembers everything',
-]
+  "She is always right",
+  "If she is wrong, refer to point 1",
+  "She finds things I can never find",
+  "She knows what I am thinking",
+  "She remembers everything",
+];
 
 export function Memory4({ onComplete }: MemoryScreenProps) {
-  const [found, setFound] = useState(false)
-  const isMobile = useIsMobile()
+  const [found, setFound] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <MemoryCard
       title="Things I've Learned"
       hint={
         isMobile
-          ? 'Find the hidden heart on the card...'
-          : 'Click the hidden heart on the card...'
+          ? "Find the hidden heart on the card..."
+          : "Click the hidden heart on the card..."
       }
       onContinue={onComplete}
     >
@@ -219,30 +229,34 @@ export function Memory4({ onComplete }: MemoryScreenProps) {
           aria-label="Hidden heart"
           className="absolute bottom-4 left-4 text-xs opacity-[0.08]"
           onClick={() => {
-            setFound(true)
-            triggerHaptic(20)
-            setTimeout(onComplete, 500)
+            setFound(true);
+            triggerHaptic(20);
+            setTimeout(onComplete, 500);
           }}
         >
           ❤️
         </motion.button>
       )}
     </MemoryCard>
-  )
+  );
 }
 
 export function Memory5({ onComplete }: MemoryScreenProps) {
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
   const handleDoubleTap = useDoubleTap(() => {
-    triggerHaptic([15, 25, 15])
-    onComplete()
-  })
+    triggerHaptic([15, 25, 15]);
+    onComplete();
+  });
 
   return (
-    <div className="flex flex-1 flex-col justify-center" onClick={handleDoubleTap} role="presentation">
+    <div
+      className="flex flex-1 flex-col justify-center"
+      onClick={handleDoubleTap}
+      role="presentation"
+    >
       <MemoryCard
         title="Thank You"
-        hint={isMobile ? 'Double tap anywhere' : 'Double-click anywhere'}
+        hint={isMobile ? "Double tap anywhere" : "Double-click anywhere"}
         onContinue={onComplete}
       >
         <p>Thank you for loving me.</p>
@@ -253,107 +267,111 @@ export function Memory5({ onComplete }: MemoryScreenProps) {
         </p>
       </MemoryCard>
     </div>
-  )
+  );
 }
 
 export function Memory6({ onComplete }: MemoryScreenProps) {
-  const [tapped, setTapped] = useState(false)
-  const isMobile = useIsMobile()
+  const [tapped, setTapped] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <MemoryCard
       title="Confession"
-      hint={isMobile ? 'Tap the blinking heart' : 'Click the blinking heart'}
+      hint={isMobile ? "Tap the blinking heart" : "Click the blinking heart"}
       onContinue={onComplete}
     >
       <p>
-        I still smile when I see <span className="font-semibold text-rose-gold">{HER_NAME}</span> on
-        my phone.
+        I still smile when I see{" "}
+        <span className="font-semibold text-rose-gold">{HER_NAME}</span> on my
+        phone.
       </p>
       <p>Even though I know the message is probably:</p>
-      <p className="italic">&ldquo;Did you eat?&rdquo;</p>
+      <p className="italic">&ldquo;Epo kelambureenga?&rdquo;</p>
       <p className="italic">or</p>
-      <p className="italic">&ldquo;Where are you?&rdquo;</p>
+      <p className="italic">&ldquo;Did you eat?&rdquo;</p>
+
       <motion.button
         type="button"
-        className={`mx-auto mt-4 block text-5xl ${!tapped ? 'blink-heart' : ''}`}
+        className={`mx-auto mt-4 block text-5xl ${
+          !tapped ? "blink-heart" : ""
+        }`}
         onClick={() => {
           if (!tapped) {
-            setTapped(true)
-            triggerHaptic(18)
-            setTimeout(onComplete, 500)
+            setTapped(true);
+            triggerHaptic(18);
+            setTimeout(onComplete, 500);
           }
         }}
       >
         ❤️
       </motion.button>
     </MemoryCard>
-  )
+  );
 }
 
 export function Memory7({ onComplete }: MemoryScreenProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [revealed, setRevealed] = useState(false)
-  const scratching = useRef(false)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [revealed, setRevealed] = useState(false);
+  const scratching = useRef(false);
 
   const initCanvas = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const dpr = window.devicePixelRatio || 1
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.scale(dpr, dpr)
-    const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height)
-    gradient.addColorStop(0, '#d4a5a5')
-    gradient.addColorStop(1, '#b76e79')
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, rect.width, rect.height)
-    ctx.fillStyle = 'rgba(255,255,255,0.9)'
-    ctx.font = 'bold 18px Playfair Display, serif'
-    ctx.textAlign = 'center'
-    ctx.fillText('Scratch here ✨', rect.width / 2, rect.height / 2)
-  }, [])
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.scale(dpr, dpr);
+    const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
+    gradient.addColorStop(0, "#d4a5a5");
+    gradient.addColorStop(1, "#b76e79");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = "bold 18px Playfair Display, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Scratch here ✨", rect.width / 2, rect.height / 2);
+  }, []);
 
   useEffect(() => {
-    initCanvas()
-    window.addEventListener('resize', initCanvas)
-    return () => window.removeEventListener('resize', initCanvas)
-  }, [initCanvas])
+    initCanvas();
+    window.addEventListener("resize", initCanvas);
+    return () => window.removeEventListener("resize", initCanvas);
+  }, [initCanvas]);
 
   const scratch = (clientX: number, clientY: number) => {
-    const canvas = canvasRef.current
-    if (!canvas || revealed) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    const rect = canvas.getBoundingClientRect()
-    const x = clientX - rect.left
-    const y = clientY - rect.top
-    ctx.globalCompositeOperation = 'destination-out'
-    ctx.beginPath()
-    ctx.arc(x, y, 22, 0, Math.PI * 2)
-    ctx.fill()
-  }
+    const canvas = canvasRef.current;
+    if (!canvas || revealed) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.fill();
+  };
 
   const checkReveal = () => {
-    const canvas = canvasRef.current
-    if (!canvas || revealed) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    let transparent = 0
+    const canvas = canvasRef.current;
+    if (!canvas || revealed) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let transparent = 0;
     for (let i = 3; i < imageData.data.length; i += 4) {
-      if (imageData.data[i] < 128) transparent++
+      if (imageData.data[i] < 128) transparent++;
     }
-    const ratio = transparent / (imageData.data.length / 4)
+    const ratio = transparent / (imageData.data.length / 4);
     if (ratio > 0.35) {
-      setRevealed(true)
-      triggerHaptic(25)
-      setTimeout(onComplete, 800)
+      setRevealed(true);
+      triggerHaptic(25);
+      setTimeout(onComplete, 800);
     }
-  }
+  };
 
   return (
     <MemoryCard
@@ -380,48 +398,48 @@ export function Memory7({ onComplete }: MemoryScreenProps) {
 
       <div className="relative h-36 w-full overflow-hidden rounded-2xl">
         <div className="flex h-full items-center justify-center bg-rose-100/80 text-5xl">
-          {revealed ? '❤️' : '💕'}
+          {revealed ? "❤️" : "💕"}
         </div>
         {!revealed && (
           <canvas
             ref={canvasRef}
             className="absolute inset-0 h-full w-full touch-none"
             onPointerDown={(e) => {
-              scratching.current = true
-              scratch(e.clientX, e.clientY)
+              scratching.current = true;
+              scratch(e.clientX, e.clientY);
             }}
             onPointerMove={(e) => {
-              if (scratching.current) scratch(e.clientX, e.clientY)
+              if (scratching.current) scratch(e.clientX, e.clientY);
             }}
             onPointerUp={() => {
-              scratching.current = false
-              checkReveal()
+              scratching.current = false;
+              checkReveal();
             }}
             onPointerLeave={() => {
-              scratching.current = false
-              checkReveal()
+              scratching.current = false;
+              checkReveal();
             }}
           />
         )}
       </div>
     </MemoryCard>
-  )
+  );
 }
 
 export function Memory8({ onComplete }: MemoryScreenProps) {
-  const isMobile = useIsMobile()
-  const [popped, setPopped] = useState<Set<number>>(new Set())
-  const target = 5
+  const isMobile = useIsMobile();
+  const [popped, setPopped] = useState<Set<number>>(new Set());
+  const target = 5;
 
   const handlePop = (id: number) => {
     setPopped((prev) => {
-      const next = new Set(prev)
-      next.add(id)
-      triggerHaptic(10)
-      if (next.size >= target) setTimeout(onComplete, 600)
-      return next
-    })
-  }
+      const next = new Set(prev);
+      next.add(id);
+      triggerHaptic(10);
+      if (next.size >= target) setTimeout(onComplete, 600);
+      return next;
+    });
+  };
 
   return (
     <MemoryCard
@@ -437,19 +455,24 @@ export function Memory8({ onComplete }: MemoryScreenProps) {
       <p className="italic text-rose-gold">
         Just with slightly more experience of being lovingly scolded.
       </p>
-      <FloatingHearts count={5} interactive onHeartTap={handlePop} poppedIds={popped} />
+      <FloatingHearts
+        count={5}
+        interactive
+        onHeartTap={handlePop}
+        poppedIds={popped}
+      />
     </MemoryCard>
-  )
+  );
 }
 
 export function Memory9({ onComplete }: MemoryScreenProps) {
-  const [opened, setOpened] = useState(false)
-  const isMobile = useIsMobile()
+  const [opened, setOpened] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <MemoryCard
       title="One Question"
-      hint={isMobile ? 'Tap the gift box' : 'Click the gift box'}
+      hint={isMobile ? "Tap the gift box" : "Click the gift box"}
       onContinue={onComplete}
     >
       <p>If I could go back in time...</p>
@@ -464,19 +487,25 @@ export function Memory9({ onComplete }: MemoryScreenProps) {
         disabled={opened}
         onClick={() => {
           if (!opened) {
-            setOpened(true)
-            triggerHaptic([20, 30, 20])
-            setTimeout(onComplete, 1800)
+            setOpened(true);
+            triggerHaptic([20, 30, 20]);
+            setTimeout(onComplete, 1800);
           }
         }}
         animate={
           opened
-            ? { scale: [1, 1.3, 0], rotate: [0, 10, -10, 0], opacity: [1, 1, 0] }
+            ? {
+                scale: [1, 1.3, 0],
+                rotate: [0, 10, -10, 0],
+                opacity: [1, 1, 0],
+              }
             : { y: [0, -8, 0] }
         }
-        transition={opened ? { duration: 1.2 } : { repeat: Infinity, duration: 2 }}
+        transition={
+          opened ? { duration: 1.2 } : { repeat: Infinity, duration: 2 }
+        }
       >
-        <span className="text-6xl">{opened ? '✨' : '🎁'}</span>
+        <span className="text-6xl">{opened ? "✨" : "🎁"}</span>
       </motion.button>
       {opened && (
         <motion.p
@@ -488,5 +517,5 @@ export function Memory9({ onComplete }: MemoryScreenProps) {
         </motion.p>
       )}
     </MemoryCard>
-  )
+  );
 }
