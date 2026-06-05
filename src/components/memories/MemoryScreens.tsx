@@ -288,7 +288,7 @@ export function Memory6({ onComplete }: MemoryScreenProps) {
       <p>Even though I know the message is probably:</p>
       <p className="italic">&ldquo;Epo kelambureenga?&rdquo;</p>
       <p className="italic">or</p>
-      <p className="italic">&ldquo;Did you eat?&rdquo;</p>
+      <p className="italic">&ldquo;Kelambiteengala&rdquo;</p>
 
       <motion.button
         type="button"
